@@ -1,0 +1,16 @@
+# PyCharm
+.idea/
+
+# virtualEnv
+venv/
+
+# python setup install files
+build/
+dist/
+qcp.egg-info
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
