@@ -1,8 +1,7 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='classPlay',
-    packages=['classPlay'],
     author='Haris Tanvir',
     url='https://github.com/haris00/classPlay',
     description='Web app that allows students to answer professor questions in class',
