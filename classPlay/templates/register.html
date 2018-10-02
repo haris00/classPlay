@@ -9,7 +9,7 @@
             <h5 class="card-title">Professor</h5>
               <i class="fas fa-chalkboard-teacher fa-3x" style="color:red"></i>
             <p class="card-text">Sign up and take quizes in class.</p>
-            <button type="button" class="btn btn-primary">Sign Up as Professor</button>
+            <a class="btn btn-primary" href="{{ url_for('professor.professor_register') }}" role="button">Sign Up as Professor</a>
           </div>
         </div>
     </div>
@@ -19,9 +19,15 @@
             <h5 class="card-title">Student</h5>
               <i class="fas fa-user-graduate fa-3x" style="color:blue"></i>
             <p class="card-text">Sign up and give quizes.</p>
-            <button type="button" class="btn btn-primary">Sign Up as Student</button>
+            <a class="btn btn-primary" href="{{ url_for('student.student_register') }}" role="button">Sign Up as Student</a>
           </div>
         </div>
     </div>
+    <div class="border-top pt-3 text-center col-md-6 offset-md-3">
+        <small class="text-muted">
+            Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log In Now</a>
+        </small>
+    </div>
 </div>
+
 {% endblock content %}
