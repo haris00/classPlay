@@ -1,0 +1,27 @@
+{% include "logoBanner.html" %}
+{% extends "layout.html" %}
+{% block content %}
+<div class = "row col-md-12 m-5">
+    <div class="col-md-6">
+        <!-- TODO: Fix alignment of the cards. -->
+        <div class="card m-5 text-center" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">Professor</h5>
+              <i class="fas fa-chalkboard-teacher fa-3x" style="color:red"></i>
+            <p class="card-text">Sign up and take quizes in class.</p>
+            <button type="button" class="btn btn-primary">Sign Up as Professor</button>
+          </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card m-5 text-center" style="width: 18rem;">
+          <div class="card-body">
+            <h5 class="card-title">Student</h5>
+              <i class="fas fa-user-graduate fa-3x" style="color:blue"></i>
+            <p class="card-text">Sign up and give quizes.</p>
+            <button type="button" class="btn btn-primary">Sign Up as Student</button>
+          </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
