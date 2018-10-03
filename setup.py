@@ -11,6 +11,7 @@ setup(
     install_requires=[
         'flask',
         'flask-sqlalchemy',
-        'flask_wtf'
+        'flask_wtf',
+        'flask_bcrypt'
     ]
 )

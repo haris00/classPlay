@@ -3,7 +3,7 @@ from classPlay import db
 
 class Student(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
+    userName = db.Column(db.String(20), unique=True, nullable=False)
     firstName = db.Column(db.String(20), unique=False, nullable=False)
     lastName = db.Column(db.String(20), unique=False, nullable=False)
     university = db.Column(db.String(40), unique=False, nullable=False)

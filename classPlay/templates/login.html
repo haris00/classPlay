@@ -2,6 +2,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="col-md-6 offset-md-3">
+        {% include "flashMessage.html" %}
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">

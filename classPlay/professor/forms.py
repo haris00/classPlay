@@ -1,22 +1,19 @@
-from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired, Email
-from wtforms import SubmitField, PasswordField, StringField
-from wtforms.validators import EqualTo, Length
+from classPlay.main.forms import RegistrationForm
+from wtforms.validators import ValidationError
+from classPlay.professor.models import Professor
+from classPlay.student.models import Student
 
 
-class ProfessorRegistrationForm(FlaskForm):
-    username = StringField('Username',
-                           validators=[DataRequired(), Length(min=2, max=20)])
-    email = StringField('Email',
-                        validators=[DataRequired(), Email()])
-    firstName = StringField('First Name',
-                            validators=[DataRequired(), Length(min=1, max=30)])
-    lastName = StringField('Last Name',
-                           validators=[DataRequired(), Length(min=1, max=30)])
-    password = PasswordField('Password', validators=[DataRequired()])
-    confirmPassword = PasswordField('Confirm Password',
-                                     validators=[DataRequired(), EqualTo('password')])
-    # TODO: Replace this with list of universities
-    university = StringField('University',
-                             validators=[DataRequired(), Length(min=1, max=30)])
-    submit = SubmitField('Sign Up')
+
+class ProfessorRegistrationForm(RegistrationForm):
+    def validate_username(self, username):
+        professor_user = Professor.query.filter_by(userName=username.data).first()
+        if professor_user:
+            raise ValidationError('That username is taken. Please choose a different one.')
+
+    def validate_email(self, email):
+        professor_user = Professor.query.filter_by(email=email.data).first()
+        student_user = Student.query.filter_by(email=email.data).first()
+        if professor_user or student_user:
+            raise ValidationError('That email is taken. Please choose a different one.')
+

@@ -62,17 +62,17 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
+                    {{ form.userName.label(class="form-control-label") }}
 
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                    {% if form.userName.errors %}
+                        {{ form.userName(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
+                            {% for error in form.userName.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
+                        {{ form.userName(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
