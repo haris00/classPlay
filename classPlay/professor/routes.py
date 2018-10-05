@@ -27,6 +27,8 @@ def professor_register():
     return render_template('professorRegister.html', form=form)
 
 
-@professor.route("/professor/<string:username>", methods=['GET', 'POST'])
-def professor_account(username):
-    return "Hallow {}".format(username)
+@professor.route("/professor/<int:id>", methods=['GET', 'POST'])
+@login_required
+def professor_account(id):
+    professor = Professor.query.filter_by(id=id).first()
+    return render_template('professorHome.html', professor=professor)

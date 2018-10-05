@@ -22,13 +22,13 @@ def login():
         if student:
             if bcrypt.check_password_hash(student.password, form.password.data):
                 login_user(student, remember=form.remember.data)
-                return redirect(url_for('student.student_account', username=student.userName))
+                return redirect(url_for('student.student_account', id=student.id))
             else:
                 flash(incorrect_credentials_msg, 'danger')
         elif professor:
             if bcrypt.check_password_hash(professor.password, form.password.data):
                 login_user(professor, remember=form.remember.data)
-                return redirect(url_for('professor.professor_account', username=professor.userName))
+                return redirect(url_for('professor.professor_account', id=professor.id))
             else:
                 flash(incorrect_credentials_msg, 'danger')
         elif not (student or professor):
@@ -48,3 +48,8 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('main.login'))
+
+#
+# @main.route("/test_banner")
+# def test_banner():
+#     return render_template('professorHome.html')

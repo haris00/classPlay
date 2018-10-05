@@ -28,6 +28,8 @@ def student_register():
     return render_template('studentRegister.html', form=form)
 
 
-@student.route("/student/<string:username>", methods=['GET', 'POST'])
-def student_account(username):
-    return "Hallow {}".format(username)
+@student.route("/student/<int:id>", methods=['GET', 'POST'])
+@login_required
+def student_account(id):
+    student = Student.query.filter_by(id=id).first()
+    return render_template('studentHome.html', student=student)
