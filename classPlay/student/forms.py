@@ -16,7 +16,7 @@ class StudentRegistrationForm(RegistrationForm):
 
     def validate_email(self, email):
         # Professor and Student cannot use the same email.
-        # Otherwise, we won't be able to identify student from professor
+        # Otherwise, it won't be able to identify student from professor
         student_user = Student.query.filter_by(email=email.data).first()
         professor_user = Professor.query.filter_by(email=email.data).first()
         if professor_user or student_user:

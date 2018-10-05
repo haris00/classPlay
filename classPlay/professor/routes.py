@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_user, current_user, logout_user, login_required
 from classPlay import db, bcrypt
 from classPlay.professor.forms import ProfessorRegistrationForm
+from classPlay.main.utils import user_redirect
 from classPlay.professor.models import Professor
 
 professor = Blueprint('professor', __name__)
@@ -9,6 +11,8 @@ professor = Blueprint('professor', __name__)
 @professor.route("/professorRegister", methods=['GET', 'POST'])
 def professor_register():
     form = ProfessorRegistrationForm()
+    if current_user.is_authenticated:
+        return user_redirect(current_user)
     if form.validate_on_submit():
         form.validate_username(form.userName)
         form.validate_email(form.email)
@@ -21,3 +25,8 @@ def professor_register():
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('main.login'))
     return render_template('professorRegister.html', form=form)
+
+
+@professor.route("/professor/<string:username>", methods=['GET', 'POST'])
+def professor_account(username):
+    return "Hallow {}".format(username)

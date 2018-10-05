@@ -1,8 +1,10 @@
 from classPlay import db
+from flask_login import UserMixin
 
 
-class Professor(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+class Professor(db.Model, UserMixin):
+    # We use same sequence for Id of both professor and student to uniquely identify them
+    id = db.Column(db.Integer, db.Sequence('userId'), primary_key=True)
     userName = db.Column(db.String(20), unique=True, nullable=False)
     firstName = db.Column(db.String(20), unique=False, nullable=False)
     lastName = db.Column(db.String(20), unique=False, nullable=False)

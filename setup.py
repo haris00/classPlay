@@ -12,6 +12,8 @@ setup(
         'flask',
         'flask-sqlalchemy',
         'flask_wtf',
-        'flask_bcrypt'
+        'flask_bcrypt',
+        'flask_login',
+        'psycopg2'
     ]
 )

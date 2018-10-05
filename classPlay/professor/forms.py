@@ -4,7 +4,6 @@ from classPlay.professor.models import Professor
 from classPlay.student.models import Student
 
 
-
 class ProfessorRegistrationForm(RegistrationForm):
     def validate_username(self, username):
         professor_user = Professor.query.filter_by(userName=username.data).first()
