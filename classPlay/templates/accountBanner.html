@@ -1,12 +1,30 @@
 <div class="row p-3 mb-2 bg-info text-white d-flex justify-content-between">
     <div class="mr-3 ml-3">
-        <i class="fas fa-glasses fa-2x"></i>
+        <!--Todo: reduce redundant html statments under if statements-->
+        {% if student %}
+            <a class="fas fa-glasses fa-2x text-white" href="{{ url_for('student.student_account') }}"></a>
+        {% elif professor %}
+            <a class="fas fa-glasses fa-2x text-white" href="{{ url_for('professor.professor_account') }}"></a>
+        {% endif %}
     </div>
     <div class="mr-3 ml-3">
-        {% if student %}
-            {{student.userName}}
-        {% elif professor %}
-            {{professor.userName}}
-        {% endif %}
+        <div class="dropdown dropleft">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {% if student %}
+                    {{student.userName}}
+                {% elif professor %}
+                    {{professor.userName}}
+                {% endif %}
+            </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                {% if student %}
+                    <a class="dropdown-item" href="{{ url_for('student.student_edit_account') }}">Account</a>
+                {% elif professor %}
+                    <a class="dropdown-item" href="{{ url_for('professor.professor_edit_account') }}">Account</a>
+                {% endif %}
+            <a class="dropdown-item" href="{{ url_for('main.logout') }}">Sign out</a>
+          </div>
+    </div>
+
     </div>
 </div>

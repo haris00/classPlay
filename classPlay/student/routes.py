@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, redirect, flash, url_for
+from flask import Blueprint, render_template, redirect, flash, url_for, request
 from flask_login import login_user, current_user, logout_user, login_required
-from classPlay.student.forms import StudentRegistrationForm
+from classPlay.student.forms import StudentRegistrationForm, UpdateStudentAccountForm
 from classPlay import db, bcrypt
 from classPlay.main.utils import user_redirect
 from classPlay.student.models import Student
@@ -28,8 +28,23 @@ def student_register():
     return render_template('studentRegister.html', form=form)
 
 
-@student.route("/student/<int:id>", methods=['GET', 'POST'])
+@student.route("/student", methods=['GET', 'POST'])
 @login_required
-def student_account(id):
-    student = Student.query.filter_by(id=id).first()
-    return render_template('studentHome.html', student=student)
+def student_account():
+    return render_template('studentHome.html', student=current_user)
+
+
+@student.route("/student/account", methods=['GET', 'POST'])
+@login_required
+def student_edit_account():
+    form = UpdateStudentAccountForm()
+    if form.validate_on_submit():
+        current_user.userName = form.userName.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('student.student_edit_account'))
+    elif request.method == 'GET':
+        form.userName.data = current_user.userName
+        form.email.data = current_user.email
+    return render_template('studentAccountUpdate.html', student=current_user, form=form)

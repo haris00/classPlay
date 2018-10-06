@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, current_user, logout_user, login_required
 from classPlay import db, bcrypt
-from classPlay.professor.forms import ProfessorRegistrationForm
+from classPlay.professor.forms import ProfessorRegistrationForm, UpdateProfessorAccountForm
 from classPlay.main.utils import user_redirect
 from classPlay.professor.models import Professor
 
@@ -27,8 +27,23 @@ def professor_register():
     return render_template('professorRegister.html', form=form)
 
 
-@professor.route("/professor/<int:id>", methods=['GET', 'POST'])
+@professor.route("/professor", methods=['GET', 'POST'])
 @login_required
-def professor_account(id):
-    professor = Professor.query.filter_by(id=id).first()
-    return render_template('professorHome.html', professor=professor)
+def professor_account():
+    return render_template('professorHome.html', professor=current_user)
+
+
+@professor.route("/professor/account", methods=['GET', 'POST'])
+@login_required
+def professor_edit_account():
+    form = UpdateProfessorAccountForm()
+    if form.validate_on_submit():
+        current_user.userName = form.userName.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your account has been updated!', 'success')
+        return redirect(url_for('professor.professor_edit_account'))
+    elif request.method == 'GET':
+        form.userName.data = current_user.userName
+        form.email.data = current_user.email
+    return render_template('professorAccountUpdate.html', professor=current_user, form=form)
