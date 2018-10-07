@@ -3,6 +3,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from classPlay import db, bcrypt
 from classPlay.professor.forms import ProfessorRegistrationForm, UpdateProfessorAccountForm
 from classPlay.main.utils import user_redirect
+from classPlay.course.models import Course
 from classPlay.professor.models import Professor
 
 professor = Blueprint('professor', __name__)
@@ -30,7 +31,8 @@ def professor_register():
 @professor.route("/professor", methods=['GET', 'POST'])
 @login_required
 def professor_account():
-    return render_template('professorHome.html', professor=current_user)
+    courses = Course.query.filter_by(professorId=current_user.id).all()
+    return render_template('professorHome.html', professor=current_user, courses=courses)
 
 
 @professor.route("/professor/account", methods=['GET', 'POST'])

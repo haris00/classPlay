@@ -48,8 +48,3 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('main.login'))
-
-#
-# @main.route("/test_banner")
-# def test_banner():
-#     return render_template('professorHome.html')

@@ -1,4 +1,23 @@
 {% include "accountBanner.html" %}
+{% include "professorYourCourseBanner.html" %}
 {% extends "layout.html" %}
 {% block content %}
+<div class="row mt-2">
+    <div>
+        <a role="button" class="btn btn-primary" href="{{ url_for('course.professor_create_course') }}">
+            Create course <i class="fas fa-plus-circle"></i></a>
+    </div>
+</div>
+<hr>
+<div class="row">
+    {% for course in courses %}
+          <div class="card m-3" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">{{course.courseName}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Join Code: {{course.joinCode}}</h6>
+                <a href="#" role="button" class="btn btn-primary btn-sm" class="card-link">Enter Course</a>
+              </div>
+          </div>
+    {% endfor %}
+</div>
 {% endblock content %}
