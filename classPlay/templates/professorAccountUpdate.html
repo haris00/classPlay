@@ -1,6 +1,7 @@
 {% include "accountBanner.html" %}
 {% extends "layout.html" %}
 {% block content %}
+<div class="col-md-6 offset-md-3">
 <form method="POST" action="" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <fieldset class="form-group">
@@ -37,5 +38,5 @@
         {{ form.submit(class="btn btn-outline-info") }}
     </div>
         </form>
-    </div>
+</div>
 {% endblock content %}
