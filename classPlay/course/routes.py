@@ -23,5 +23,5 @@ def professor_create_course():
         db.session.add(course)
         # TODO: Handle database unique constraint exception if same joinCode is given by the random function
         db.session.commit()
-        return redirect(url_for('professor.professor_account'))
-    return render_template('professorCreateCourse.html', professor=current_user, form=form)
+        return redirect(url_for('professor.account'))
+    return render_template('professor/createCourse.html', professor=current_user, form=form)

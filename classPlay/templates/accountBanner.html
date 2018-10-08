@@ -2,9 +2,9 @@
     <div class="mr-3 ml-3">
         <!--Todo: reduce redundant html statments under if statements-->
         {% if student %}
-            <a class="fas fa-glasses fa-2x text-white" href="{{ url_for('student.student_account') }}"></a>
+            <a class="fas fa-glasses fa-2x text-white" href="{{ url_for('student.account') }}"></a>
         {% elif professor %}
-            <a class="fas fa-glasses fa-2x text-white" href="{{ url_for('professor.professor_account') }}"></a>
+            <a class="fas fa-glasses fa-2x text-white" href="{{ url_for('professor.account') }}"></a>
         {% endif %}
     </div>
     <div class="mr-3 ml-3">
@@ -18,9 +18,9 @@
             </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 {% if student %}
-                    <a class="dropdown-item" href="{{ url_for('student.student_edit_account') }}">Account</a>
+                    <a class="dropdown-item" href="{{ url_for('student.edit_account') }}">Account</a>
                 {% elif professor %}
-                    <a class="dropdown-item" href="{{ url_for('professor.professor_edit_account') }}">Account</a>
+                    <a class="dropdown-item" href="{{ url_for('professor.edit_account') }}">Account</a>
                 {% endif %}
             <a class="dropdown-item" href="{{ url_for('main.logout') }}">Sign out</a>
           </div>

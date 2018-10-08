@@ -9,7 +9,7 @@ student = Blueprint('student', __name__)
 
 
 @student.route("/studentRegister", methods=['GET', 'POST'])
-def student_register():
+def register():
     form = StudentRegistrationForm()
     if current_user.is_authenticated:
         return user_redirect(current_user)
@@ -25,26 +25,26 @@ def student_register():
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('main.login'))
-    return render_template('studentRegister.html', form=form)
+    return render_template('student/register.html', form=form)
 
 
 @student.route("/student", methods=['GET', 'POST'])
 @login_required
-def student_account():
-    return render_template('studentHome.html', student=current_user)
+def account():
+    return render_template('student/home.html', student=current_user)
 
 
 @student.route("/student/account", methods=['GET', 'POST'])
 @login_required
-def student_edit_account():
+def edit_account():
     form = UpdateStudentAccountForm()
     if form.validate_on_submit():
         current_user.userName = form.userName.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
-        return redirect(url_for('student.student_edit_account'))
+        return redirect(url_for('student.edit_account'))
     elif request.method == 'GET':
         form.userName.data = current_user.userName
         form.email.data = current_user.email
-    return render_template('studentAccountUpdate.html', student=current_user, form=form)
+    return render_template('student/accountUpdate.html', student=current_user, form=form)

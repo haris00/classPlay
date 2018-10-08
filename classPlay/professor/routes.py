@@ -10,7 +10,7 @@ professor = Blueprint('professor', __name__)
 
 
 @professor.route("/professorRegister", methods=['GET', 'POST'])
-def professor_register():
+def register():
     form = ProfessorRegistrationForm()
     if current_user.is_authenticated:
         return user_redirect(current_user)
@@ -25,48 +25,48 @@ def professor_register():
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('main.login'))
-    return render_template('professorRegister.html', form=form)
+    return render_template('professor/register.html', form=form)
 
 
 @professor.route("/professor", methods=['GET', 'POST'])
 @login_required
-def professor_account():
+def account():
     courses = Course.query.filter_by(professorId=current_user.id).all()
-    return render_template('professorHome.html', professor=current_user, courses=courses)
+    return render_template('professor/home.html', professor=current_user, courses=courses)
 
 
 @professor.route("/professor/account", methods=['GET', 'POST'])
 @login_required
-def professor_edit_account():
+def edit_account():
     form = UpdateProfessorAccountForm()
     if form.validate_on_submit():
         current_user.userName = form.userName.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
-        return redirect(url_for('professor.professor_edit_account'))
+        return redirect(url_for('professor.edit_account'))
     elif request.method == 'GET':
         form.userName.data = current_user.userName
         form.email.data = current_user.email
-    return render_template('professorAccountUpdate.html', professor=current_user, form=form)
+    return render_template('professor/accountUpdate.html', professor=current_user, form=form)
 
 
 @professor.route("/professor/course/content/<int:course_id>", methods=['GET', 'POST'])
 @login_required
-def professor_course_content(course_id):
+def course_content(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('professorCourseContent.html', professor=current_user, course=course, active="content")
+    return render_template('professor/courseContent.html', professor=current_user, course=course, active="content")
 
 
 @professor.route("/professor/course/grades/<int:course_id>", methods=['GET', 'POST'])
 @login_required
-def professor_course_grades(course_id):
+def course_grades(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('professorCourseContent.html', professor=current_user, course=course, active="grades")
+    return render_template('professor/courseContent.html', professor=current_user, course=course, active="grades")
 
 
 @professor.route("/professor/course/students/<int:course_id>", methods=['GET', 'POST'])
 @login_required
-def professor_course_students(course_id):
+def course_students(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('professorCourseContent.html', professor=current_user, course=course, active="students")
+    return render_template('professor/courseContent.html', professor=current_user, course=course, active="students")

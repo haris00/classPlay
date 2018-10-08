@@ -1,5 +1,5 @@
 {% include "accountBanner.html" %}
-{% include "professorYourCourseBanner.html" %}
+{% include "professor/yourCourseBanner.html" %}
 {% extends "layout.html" %}
 {% block content %}
 <div class="row mt-2">
@@ -15,7 +15,7 @@
               <div class="card-body">
                 <h5 class="card-title">{{course.courseName}}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Join Code: {{course.joinCode}}</h6>
-                <a href="{{ url_for('professor.professor_course_content',course_id=course.id) }}"
+                <a href="{{ url_for('professor.course_content',course_id=course.id) }}"
                    role="button" class="btn btn-primary btn-sm" class="card-link">Enter Course</a>
               </div>
           </div>
