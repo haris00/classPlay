@@ -49,3 +49,24 @@ def professor_edit_account():
         form.userName.data = current_user.userName
         form.email.data = current_user.email
     return render_template('professorAccountUpdate.html', professor=current_user, form=form)
+
+
+@professor.route("/professor/course/content/<int:course_id>", methods=['GET', 'POST'])
+@login_required
+def professor_course_content(course_id):
+    course = Course.query.filter_by(id=course_id).first()
+    return render_template('professorCourseContent.html', professor=current_user, course=course, active="content")
+
+
+@professor.route("/professor/course/grades/<int:course_id>", methods=['GET', 'POST'])
+@login_required
+def professor_course_grades(course_id):
+    course = Course.query.filter_by(id=course_id).first()
+    return render_template('professorCourseContent.html', professor=current_user, course=course, active="grades")
+
+
+@professor.route("/professor/course/students/<int:course_id>", methods=['GET', 'POST'])
+@login_required
+def professor_course_students(course_id):
+    course = Course.query.filter_by(id=course_id).first()
+    return render_template('professorCourseContent.html', professor=current_user, course=course, active="students")
