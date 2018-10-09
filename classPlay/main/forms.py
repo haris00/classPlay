@@ -14,25 +14,25 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
 
-    userName = StringField('Username',
+    user_name = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
-    firstName = StringField('First Name',
+    first_name = StringField('First Name',
                             validators=[DataRequired(), Length(min=1, max=30)])
-    lastName = StringField('Last Name',
+    last_name = StringField('Last Name',
                            validators=[DataRequired(), Length(min=1, max=30)])
     password = PasswordField('Password', validators=[DataRequired()])
-    confirmPassword = PasswordField('Confirm Password',
+    confirm_password = PasswordField('Confirm Password',
                                     validators=[DataRequired(), EqualTo('password')])
     # TODO: Replace this with list of universities
     university = StringField('University',
-                             validators=[DataRequired(), Length(min=1, max=30)])
+                             validators=[DataRequired(), Length(min=1, max=80)])
     submit = SubmitField('Sign Up')
 
 
 class UpdateAccountForm(FlaskForm):
-    userName = StringField('Username',
+    user_name = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
                         validators=[DataRequired(), Email()])

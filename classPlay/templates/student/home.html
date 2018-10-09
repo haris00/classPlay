@@ -1,4 +1,24 @@
-{% include "accountBanner.html" %}
+{% include "account_banner.html" %}
+{% include "student/your_course_banner.html" %}
 {% extends "layout.html" %}
 {% block content %}
+<div class="row mt-2">
+    <div>
+        <a role="button" class="btn btn-primary" href="{{ url_for('course.student_join_course') }}">
+            Join course <i class="fas fa-sign-in-alt"></i></a>
+    </div>
+</div>
+<hr>
+<div class="row">
+    {% for student_course in student_courses %}
+          <div class="card m-3" style="width: 18rem;">
+              <div class="card-body">
+                <h5 class="card-title">{{student_course.course_name}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Join Code: {{student_course.join_code}}</h6>
+                <a href="#"
+                   role="button" class="btn btn-primary btn-sm" class="card-link">Enter Course</a>
+              </div>
+          </div>
+    {% endfor %}
+</div>
 {% endblock content %}

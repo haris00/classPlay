@@ -9,17 +9,17 @@ from classPlay.professor.models import Professor
 professor = Blueprint('professor', __name__)
 
 
-@professor.route("/professorRegister", methods=['GET', 'POST'])
+@professor.route("/professor_register", methods=['GET', 'POST'])
 def register():
     form = ProfessorRegistrationForm()
     if current_user.is_authenticated:
         return user_redirect(current_user)
     if form.validate_on_submit():
-        form.validate_username(form.userName)
+        form.validate_username(form.user_name)
         form.validate_email(form.email)
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        professor = Professor(userName=form.userName.data, firstName=form.firstName.data,
-                              lastName=form.lastName.data, university=form.university.data, email=form.email.data,
+        professor = Professor(user_name=form.user_name.data, first_name=form.first_name.data,
+                              last_name=form.last_name.data, university=form.university.data, email=form.email.data,
                               password=hashed_password)
         db.session.add(professor)
         db.session.commit()
@@ -31,7 +31,7 @@ def register():
 @professor.route("/professor", methods=['GET', 'POST'])
 @login_required
 def account():
-    courses = Course.query.filter_by(professorId=current_user.id).all()
+    courses = Course.query.filter_by(professor_id=current_user.id).all()
     return render_template('professor/home.html', professor=current_user, courses=courses)
 
 
@@ -40,33 +40,33 @@ def account():
 def edit_account():
     form = UpdateProfessorAccountForm()
     if form.validate_on_submit():
-        current_user.userName = form.userName.data
+        current_user.user_name = form.user_name.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('professor.edit_account'))
     elif request.method == 'GET':
-        form.userName.data = current_user.userName
+        form.user_name.data = current_user.user_name
         form.email.data = current_user.email
-    return render_template('professor/accountUpdate.html', professor=current_user, form=form)
+    return render_template('professor/account_update.html', professor=current_user, form=form)
 
 
 @professor.route("/professor/course/content/<int:course_id>", methods=['GET', 'POST'])
 @login_required
 def course_content(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('professor/courseContent.html', professor=current_user, course=course, active="content")
+    return render_template('professor/course_content.html', professor=current_user, course=course, active="content")
 
 
 @professor.route("/professor/course/grades/<int:course_id>", methods=['GET', 'POST'])
 @login_required
 def course_grades(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('professor/courseContent.html', professor=current_user, course=course, active="grades")
+    return render_template('professor/course_content.html', professor=current_user, course=course, active="grades")
 
 
 @professor.route("/professor/course/students/<int:course_id>", methods=['GET', 'POST'])
 @login_required
 def course_students(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('professor/courseContent.html', professor=current_user, course=course, active="students")
+    return render_template('professor/course_content.html', professor=current_user, course=course, active="students")

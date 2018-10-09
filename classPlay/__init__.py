@@ -45,7 +45,7 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     db.app = app
-    db.create_all()  # To initialize tables
+    # db.create_all()  # To initialize tables
     # db.drop_all() # To drop all
     login_manager.init_app(app)
     return app

@@ -6,8 +6,8 @@ from flask_login import current_user
 
 
 class ProfessorRegistrationForm(RegistrationForm):
-    def validate_username(self, username):
-        professor_user = Professor.query.filter_by(userName=username.data).first()
+    def validate_username(self, user_name):
+        professor_user = Professor.query.filter_by(user_name=user_name.data).first()
         if professor_user:
             raise ValidationError('That username is taken. Please choose a different one.')
 
@@ -20,9 +20,9 @@ class ProfessorRegistrationForm(RegistrationForm):
 
 class UpdateProfessorAccountForm(UpdateAccountForm):
 
-    def validate_username(self, username):
-        if username.data != current_user.userName:
-            professor = Professor.query.filter_by(username=userName.data).first()
+    def validate_username(self, user_name):
+        if user_name.data != current_user.user_name:
+            professor = Professor.query.filter_by(user_name=user_name.data).first()
             if professor:
                 raise ValidationError('That username is taken. Please choose a different one.')
 

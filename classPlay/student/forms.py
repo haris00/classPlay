@@ -8,12 +8,12 @@ from flask_login import current_user
 
 
 class StudentRegistrationForm(RegistrationForm):
-    studentId = StringField('Student ID', validators=[Length(min=1, max=30)])
+    student_id = StringField('Student ID', validators=[Length(min=1, max=30)])
 
-    def validate_username(self, username):
-        student_user = Student.query.filter_by(userName=username.data).first()
+    def validate_user_name(self, user_name):
+        student_user = Student.query.filter_by(user_name=user_name.data).first()
         if student_user:
-            raise ValidationError('That username is taken. Please choose a different one.')
+            raise ValidationError('That user_name is taken. Please choose a different one.')
 
     def validate_email(self, email):
         # Professor and Student cannot use the same email.
@@ -26,11 +26,11 @@ class StudentRegistrationForm(RegistrationForm):
 
 class UpdateStudentAccountForm(UpdateAccountForm):
 
-    def validate_username(self, username):
-        if username.data != current_user.userName:
-            student = Student.query.filter_by(username=userName.data).first()
+    def validate_user_name(self, user_name):
+        if user_name.data != current_user.user_name:
+            student = Student.query.filter_by(user_name=user_name.data).first()
             if student:
-                raise ValidationError('That username is taken. Please choose a different one.')
+                raise ValidationError('That user_name is taken. Please choose a different one.')
 
     def validate_email(self, email):
         if email.data != current_user.email:

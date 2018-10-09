@@ -4,6 +4,7 @@ from classPlay.student.forms import StudentRegistrationForm, UpdateStudentAccoun
 from classPlay import db, bcrypt
 from classPlay.main.utils import user_redirect
 from classPlay.student.models import Student
+from classPlay.course.models import StudentCourse, Course
 
 student = Blueprint('student', __name__)
 
@@ -14,11 +15,11 @@ def register():
     if current_user.is_authenticated:
         return user_redirect(current_user)
     if form.validate_on_submit():
-        form.validate_username(form.userName)
+        form.validate_user_name(form.user_name)
         form.validate_email(form.email)
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        student = Student(userName=form.userName.data, firstName=form.firstName.data,
-                          studentId=form.studentId.data, lastName=form.lastName.data,
+        student = Student(user_name=form.user_name.data, first_name=form.first_name.data,
+                          student_id=form.student_id.data, last_name=form.last_name.data,
                           university=form.university.data, email=form.email.data,
                           password=hashed_password)
         db.session.add(student)
@@ -31,7 +32,9 @@ def register():
 @student.route("/student", methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('student/home.html', student=current_user)
+    student_courses = StudentCourse.query.join(Course, StudentCourse.course_id == Course.id).all()
+    # filter_by(student_id=current_user.id)
+    return render_template('student/home.html', student=current_user, student_courses=student_courses)
 
 
 @student.route("/student/account", methods=['GET', 'POST'])
@@ -39,12 +42,12 @@ def account():
 def edit_account():
     form = UpdateStudentAccountForm()
     if form.validate_on_submit():
-        current_user.userName = form.userName.data
+        current_user.user_name = form.user_name.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated!', 'success')
         return redirect(url_for('student.edit_account'))
     elif request.method == 'GET':
-        form.userName.data = current_user.userName
+        form.user_name.data = current_user.user_name
         form.email.data = current_user.email
-    return render_template('student/accountUpdate.html', student=current_user, form=form)
+    return render_template('student/account_update.html', student=current_user, form=form)

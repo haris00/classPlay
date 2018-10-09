@@ -1,37 +1,36 @@
-{% include "accountBanner.html" %}
+{% include "account_banner.html" %}
 {% extends "layout.html" %}
 {% block content %}
-<div class="col-md-6 offset-md-3">
-        {% include "flashMessage.html" %}
+    <div class="col-md-6 offset-md-3">
+        {% include "flash_message.html" %}
         <form method="POST" action="" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Create Course</legend>
+                <legend class="border-bottom mb-4">Account Info</legend>
                 <div class="form-group">
-                    {{ form.courseName.label(class="form-control-label") }}
-
-                    {% if form.courseName.errors %}
-                        {{ form.courseName(class="form-control form-control-lg is-invalid") }}
+                    {{ form.user_name.label(class="form-control-label") }}
+                    {% if form.user_name.errors %}
+                        {{ form.user_name(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.courseName.errors %}
+                            {% for error in form.user_name.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.courseName(class="form-control form-control-lg") }}
+                        {{ form.user_name(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
-                    {{ form.courseSection.label(class="form-control-label") }}
-                    {% if form.courseSection.errors %}
-                        {{ form.courseSection(class="form-control form-control-lg is-invalid") }}
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.courseSection.errors %}
+                            {% for error in form.email.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.courseSection(class="form-control form-control-lg") }}
+                        {{ form.email(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
             </fieldset>
@@ -39,5 +38,5 @@
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
                 </form>
-            </div>
+    </div>
 {% endblock content %}

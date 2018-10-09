@@ -11,9 +11,9 @@
         <div class="dropdown dropleft">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {% if student %}
-                    {{student.userName}}
+                    {{student.user_name}}
                 {% elif professor %}
-                    {{professor.userName}}
+                    {{professor.user_name}}
                 {% endif %}
             </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
