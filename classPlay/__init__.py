@@ -33,11 +33,15 @@ def create_app(config_class=Config):
     from classPlay.professor.routes import professor
     from classPlay.student.routes import student
     from classPlay.course.routes import course
+    from classPlay.question.routes import question
+    from classPlay.quiz.routes import quiz
 
     app.register_blueprint(main)
     app.register_blueprint(student)
     app.register_blueprint(professor)
     app.register_blueprint(course)
+    app.register_blueprint(question)
+    app.register_blueprint(quiz)
 
     db.init_app(app)
     db.app = app
