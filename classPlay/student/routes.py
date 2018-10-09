@@ -5,6 +5,8 @@ from classPlay import db, bcrypt
 from classPlay.main.utils import user_redirect
 from classPlay.student.models import Student
 from classPlay.course.models import StudentCourse, Course
+from classPlay.professor.models import Professor
+from classPlay import db
 
 student = Blueprint('student', __name__)
 
@@ -32,8 +34,8 @@ def register():
 @student.route("/student", methods=['GET', 'POST'])
 @login_required
 def account():
-    student_courses = StudentCourse.query.join(Course, StudentCourse.course_id == Course.id).all()
-    # filter_by(student_id=current_user.id)
+    # filter(StudentCourse.student_id==current_user.id)
+    student_courses = db.session.query(StudentCourse, Course, Professor).join(Course, Professor).filter(StudentCourse.student_id==current_user.id).all()
     return render_template('student/home.html', student=current_user, student_courses=student_courses)
 
 
