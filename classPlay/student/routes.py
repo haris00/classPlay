@@ -53,3 +53,17 @@ def edit_account():
         form.user_name.data = current_user.user_name
         form.email.data = current_user.email
     return render_template('student/account_update.html', student=current_user, form=form)
+
+
+@student.route("/student/course/content/<int:course_id>", methods=['GET', 'POST'])
+@login_required
+def course_content(course_id):
+    course = Course.query.filter_by(id=course_id).first()
+    return render_template('student/course_content.html', student=current_user, course=course, active="content")
+
+
+@student.route("/student/course/scoreBook/<int:course_id>", methods=['GET', 'POST'])
+@login_required
+def course_score_book(course_id):
+    course = Course.query.filter_by(id=course_id).first()
+    return render_template('student/course_content.html', student=current_user, course=course, active="scoreBook")

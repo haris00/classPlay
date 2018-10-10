@@ -17,21 +17,14 @@
             {% else %}
                 <li class="nav-item">
             {% endif %}
-                <a class="nav-link" href="{{ url_for('professor.course_content',course_id=course.id) }}">Content</a>
+                <a class="nav-link" href="{{ url_for('student.course_content',course_id=course.id) }}">Content</a>
             </li>
-            {% if active == "grades" %}
+            {% if active == "scoreBook" %}
                 <li class="nav-item active">
             {% else %}
                 <li class="nav-item">
             {% endif %}
-                <a class="nav-link" href="{{ url_for('professor.course_grades',course_id=course.id) }}">Grades</a>
-            </li>
-            {% if active == "students" %}
-                <li class="nav-item active">
-            {% else %}
-                <li class="nav-item">
-            {% endif %}
-                <a class="nav-link" href="{{ url_for('professor.course_students',course_id=course.id) }}">Students</a>
+                <a class="nav-link" href="{{ url_for('student.course_score_book',course_id=course.id) }}">Score Book</a>
             </li>
         </ul>
     </div>

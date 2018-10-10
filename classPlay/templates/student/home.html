@@ -16,7 +16,7 @@
                 <h5 class="card-title">{{student_course.Course.course_name}}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Join Code: {{student_course.Course.join_code}}</h6>
                 <h6 class="card-subtitle mb-2 text-muted">Professor: {{student_course.Professor.first_name + " " + student_course.Professor.last_name}}</h6>
-                <a href="#"
+                <a href="{{ url_for('student.course_content',course_id=student_course.Course.id) }}"
                    role="button" class="btn btn-primary btn-sm" class="card-link">Enter Course</a>
               </div>
           </div>
