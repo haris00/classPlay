@@ -35,6 +35,7 @@ def create_app(config_class=Config):
     from classPlay.course.routes import course
     from classPlay.question.routes import question
     from classPlay.quiz.routes import quiz
+    from classPlay.sql_procedures.routes import sql_procedures
 
     app.register_blueprint(main)
     app.register_blueprint(student)
@@ -42,10 +43,11 @@ def create_app(config_class=Config):
     app.register_blueprint(course)
     app.register_blueprint(question)
     app.register_blueprint(quiz)
+    app.register_blueprint(sql_procedures)
 
     db.init_app(app)
     db.app = app
-    # db.create_all()  # To initialize tables
+    db.create_all()  # To initialize tables
     # db.drop_all() # To drop all
     login_manager.init_app(app)
     return app

@@ -2,4 +2,55 @@
 {% include "professor/nav_bar.html" %}
 {% extends "layout.html" %}
 {% block content %}
+
+<div class="row">
+
+    <!--Container for listing questions-->
+    <div class="col-md-2">
+        {% for quiz in course_content_object %}
+        <div class="card" style="width: 12rem;">
+          <div class="card-body">
+            <h5 class="card-title"><span>Quiz {{quiz.quiz_number}}&nbsp;&nbsp;&nbsp;
+                <a class="fas fa-play" style="color:red"></a></span></h5>
+          </div>
+            <ul class="list-group list-group-flush">
+            {% for question in quiz.questions %}
+                <!--TODO: make questions collapsible-->
+                <li class="list-group-item"><i class="far fa-comment"></i>
+                    <a onclick="displayQuestion({{quiz.quiz_number}}, {{question.question_number}})">
+                        Q. {{question.question_number}}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!--Container for displaying question-->
+    <div class="col-md-10">
+        <p id="question"></p>
+    </div>
+
+</div>
+
+<script>
+function displayQuestion(quiz_number, question_number) {
+  var course_content_object = {{course_content_object | tojson}};
+  var question = course_content_object[quiz_number-1]["questions"][question_number-1];
+  question_html = `
+  <span><h3>Quiz ${quiz_number}</h3></span>
+  <span><h5><i>Question</i> ${question_number}</h5></span>
+  <span>${question.question_text}</span>
+    <ul class="list-group">
+  `;
+  question.mcq_options.forEach(function(option) {
+    if (option.correct_answer)
+       question_html += `<li class="list-group-item active">${option.option_text}</li>`;
+    else
+        question_html += `<li class="list-group-item">${option.option_text}</li>`;
+    });
+  question_html += `</ul>`;
+  document.getElementById("question").innerHTML = question_html;
+}
+</script>
+
 {% endblock content %}

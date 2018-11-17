@@ -7,6 +7,7 @@ class Question(db.Model, UserMixin):
     question_type = db.Column(db.String(40), nullable=False)
     # in seconds
     time_limit = db.Column(db.Integer, nullable=False)
+    question_number = db.Column(db.Integer, nullable=False)
 
 
 class QuizQuestion(db.Model, UserMixin):
@@ -27,4 +28,3 @@ class MCQAnswers(db.Model, UserMixin):
     option_text = db.Column(db.String(), nullable=False)
     correct_answer = db.Column(db.Boolean(), nullable=False, default=False)
     question_id = db.Column('MCQ_id', db.Integer, db.ForeignKey("MCQ.id"), nullable=False)
-    option_number = db.Column(db.Integer, nullable=False)
