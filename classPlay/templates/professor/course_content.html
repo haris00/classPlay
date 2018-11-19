@@ -7,17 +7,18 @@
 
     <!--Container for listing questions-->
     <div class="col-md-2">
-        {% for quiz in course_content_object %}
+        {% for quiz in quiz_content_object %}
         <div class="card" style="width: 12rem;">
           <div class="card-body">
             <h5 class="card-title"><span>Quiz {{quiz.quiz_number}}&nbsp;&nbsp;&nbsp;
-                <a class="fas fa-play" style="color:red"></a></span></h5>
+                <a href="{{ url_for('professor.run_quiz',course_id=course.id, quiz_id=quiz.quiz_id, question_number=1) }}"
+                   class="fas fa-play" style="color:red"></a></span></h5>
           </div>
             <ul class="list-group list-group-flush">
             {% for question in quiz.questions %}
                 <!--TODO: make questions collapsible-->
                 <li class="list-group-item"><i class="far fa-comment"></i>
-                    <a onclick="displayQuestion({{quiz.quiz_number}}, {{question.question_number}})">
+                    <a href="#" onclick="displayQuestion({{quiz.quiz_number}}, {{question.question_number}})">
                         Q. {{question.question_number}}</a></li>
             {% endfor %}
           </ul>
@@ -31,11 +32,12 @@
     </div>
 
 </div>
-
+ <!--TODO: move this to js folder in static directory (because we are accessing a jinja template variable inside
+ the function, we cannot do that currently)-->
 <script>
 function displayQuestion(quiz_number, question_number) {
-  var course_content_object = {{course_content_object | tojson}};
-  var question = course_content_object[quiz_number-1]["questions"][question_number-1];
+  var quiz_content_object = {{quiz_content_object | tojson}};
+  var question = quiz_content_object[quiz_number-1]["questions"][question_number-1];
   question_html = `
   <span><h3>Quiz ${quiz_number}</h3></span>
   <span><h5><i>Question</i> ${question_number}</h5></span>
