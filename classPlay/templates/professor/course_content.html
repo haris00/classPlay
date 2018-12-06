@@ -18,7 +18,7 @@
             {% for question in quiz.questions %}
                 <!--TODO: make questions collapsible-->
                 <li class="list-group-item"><i class="far fa-comment"></i>
-                    <a href="#" onclick="displayQuestion({{quiz.quiz_number}}, {{question.question_number}})">
+                    <a href="#" onclick='displayQuestion({{quiz.quiz_number}}, {{question.question_number}}, {{quiz_content_object[quiz.quiz_number-1]["questions"][question.question_number-1] | tojson}})'>
                         Q. {{question.question_number}}</a></li>
             {% endfor %}
           </ul>
@@ -32,27 +32,6 @@
     </div>
 
 </div>
- <!--TODO: move this to js folder in static directory (because we are accessing a jinja template variable inside
- the function, we cannot do that currently)-->
-<script>
-function displayQuestion(quiz_number, question_number) {
-  var quiz_content_object = {{quiz_content_object | tojson}};
-  var question = quiz_content_object[quiz_number-1]["questions"][question_number-1];
-  question_html = `
-  <span><h3>Quiz ${quiz_number}</h3></span>
-  <span><h5><i>Question</i> ${question_number}</h5></span>
-  <span>${question.question_text}</span>
-    <ul class="list-group">
-  `;
-  question.mcq_options.forEach(function(option) {
-    if (option.correct_answer)
-       question_html += `<li class="list-group-item active">${option.option_text}</li>`;
-    else
-        question_html += `<li class="list-group-item">${option.option_text}</li>`;
-    });
-  question_html += `</ul>`;
-  document.getElementById("question").innerHTML = question_html;
-}
-</script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/courseContent.js')}}"> </script>
 
 {% endblock content %}
