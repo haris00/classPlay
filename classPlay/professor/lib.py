@@ -1,10 +1,13 @@
 from classPlay.question.models import QuizQuestion, Question, MCQ, MCQAnswers
+from sqlalchemy import asc
 
-
-def get_quiz_content(quizes):
+def get_quiz_content(quizes, quiz_id=None):
+    """Returns data for all quizes. If quiz_id is not none, then provides data just for that quiz"""
     quiz_content_object = []
     for quiz in quizes:
         quiz_content = dict()
+        if quiz_id is not None and quiz_id == quiz.id:
+            continue
         quiz_content["quiz_id"] = quiz.id
         quiz_content["quiz_number"] = quiz.quiz_number
         quiz_content_object.append(quiz_content)
@@ -21,7 +24,9 @@ def get_quiz_content(quizes):
             if question.question_type == "MCQ":
                 mcq_question = MCQ.query.filter_by(question_id=question.id).first()
                 question_content["question_text"] = mcq_question.question_text
-                mcq_answers = MCQAnswers.query.filter_by(question_id=mcq_question.id).all()
+                # sorting is MUST to make sure that professor options order and student option order is same
+                mcq_answers = MCQAnswers.query.filter_by(question_id=mcq_question.id).\
+                    order_by(asc(MCQAnswers.id)).all()
                 mcq_options = []
                 for mcq_answer in mcq_answers:
                     mcq_options_content = dict()
