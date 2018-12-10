@@ -1,13 +1,14 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
 from flask_login import login_user, current_user, logout_user, login_required
 from classPlay import db, bcrypt
 from classPlay.professor.forms import ProfessorRegistrationForm, UpdateProfessorAccountForm
 from classPlay.main.utils import user_redirect
 from classPlay.course.models import Course
 from classPlay.quiz.models import Quiz
-from classPlay.professor.lib import get_quiz_content
-
+from classPlay.professor.lib import get_quiz_content, set_quiz_state_in_redis, get_quiz_state_in_redis, \
+    delete_quiz_state_in_redis
 from classPlay.professor.models import Professor
+import json
 
 professor = Blueprint('professor', __name__)
 
@@ -79,18 +80,81 @@ def course_students(course_id):
     return render_template('professor/course_students.html', professor=current_user, course=course, active="students")
 
 
-@professor.route("/professor/course/content/run_quiz/<int:course_id>/<int:quiz_id>/<int:question_number>", methods=['GET', 'POST'])
+@professor.route("/professor/course/content/start_quiz/<int:course_id>/<int:quiz_id>", methods=['GET', 'POST'])
 @login_required
-def run_quiz(course_id, quiz_id, question_number):
+def start_quiz(course_id, quiz_id):
+    # TODO: Throw error specifically why quiz not started
+    # The app should never allow to start quiz if it's already running
+    if get_quiz_state_in_redis(professor_id=current_user, course_id=course_id) is None:
+        abort(400)
+    current_quiz_state = {
+        "status": "stopped",
+        "question_number": 1,
+        "time_limit": "not_set"
+    }
+    set_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id, state=current_quiz_state)
+    return redirect(url_for('professor.get_running_quiz',course_id=course_id, quiz_id=quiz_id))
+
+
+@professor.route("/professor/course/content/get_running_quiz/<int:course_id>/<int:quiz_id>/", methods=['GET', 'POST'])
+@login_required
+def get_running_quiz(course_id, quiz_id):
     course = Course.query.filter_by(id=course_id).first()
     quizes = Quiz.query.filter_by(id=quiz_id, course_id=course_id).all()
     quiz_content_object = get_quiz_content(quizes)[0]
+    # Stop the quiz if there is no questions (or don't let it run)
     total_questions = len(quiz_content_object["questions"])
+    current_quiz_state = get_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
+    question_number = int(current_quiz_state["question_number"])
     if total_questions == 0 or question_number > total_questions or question_number < 0:
+        delete_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
         return render_template('professor/course_students.html', professor=current_user, course=course, active="content")
     mcq_options = quiz_content_object["questions"][question_number-1]["mcq_options"]
     question_text = quiz_content_object["questions"][question_number-1]["question_text"]
-    time_limit = quiz_content_object["questions"][question_number-1]["time_limit"]
+    if current_quiz_state.get("time_limit", "not_set") == "not_set":
+        time_limit = quiz_content_object["questions"][question_number-1]["time_limit"]
+    else:
+        time_limit = current_quiz_state.get("time_limit")
     return render_template('professor/run_quiz.html', professor=current_user, course=course, mcq_options=mcq_options,
                            question_text=question_text, time_limit=time_limit, total_questions=total_questions,
                            question_number=question_number, active="content")
+
+
+@professor.route("/professor/api/set_quiz_state", methods=['POST'])
+# @login_required
+def set_quiz_state():
+    """
+    Sets the state of a running quiz
+    Takes json data in post request in the form
+    {
+    "professor_id":1,
+    "course_id":1,
+    "state":
+        {
+            "quiz_id":<quiz_id>,
+            "status":"paused",
+            ...
+        }
+    }
+    And sets the quiz state in redis with following schema:
+    "running_quizes":<professor_id>:<course_id>:
+    {
+        {
+            "status": "pause",
+            ...
+        }
+    }
+
+    :return:
+    """
+    if not request.json:
+        abort(400)
+    try:
+        data = request.json
+        professor_id = data["professor_id"]
+        course_id = data["course_id"]
+        state = data["state"]
+    except KeyError:
+        abort(400)
+    set_quiz_state_in_redis(professor_id, course_id, state)
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}

@@ -1,5 +1,7 @@
 from classPlay.question.models import QuizQuestion, Question, MCQ, MCQAnswers
 from sqlalchemy import asc
+from classPlay import redis
+
 
 def get_quiz_content(quizes, quiz_id=None):
     """Returns data for all quizes. If quiz_id is not none, then provides data just for that quiz"""
@@ -39,3 +41,17 @@ def get_quiz_content(quizes, quiz_id=None):
                 continue
 
     return quiz_content_object
+
+
+def set_quiz_state_in_redis(professor_id, course_id, state):
+    for state_data_key, state_data_value in state.iteritems():
+        redis.hset('running_quizes:{0}:{1}'.format(professor_id, course_id), state_data_key, state_data_value)
+
+
+def get_quiz_state_in_redis(professor_id, course_id):
+    quiz_state = redis.hgetall('running_quizes:{0}:{1}'.format(professor_id, course_id))
+    return quiz_state
+
+
+def delete_quiz_state_in_redis(professor_id, course_id):
+    return redis.delete('running_quizes:{0}:{1}'.format(professor_id, course_id))

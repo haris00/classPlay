@@ -14,6 +14,7 @@ setup(
         'flask_wtf',
         'flask_bcrypt',
         'flask_login',
-        'psycopg2'
+        'psycopg2',
+        'Flask-And-Redis'
     ]
 )

@@ -11,7 +11,7 @@
         <div class="card" style="width: 12rem;">
           <div class="card-body">
             <h5 class="card-title"><span>Quiz {{quiz.quiz_number}}&nbsp;&nbsp;&nbsp;
-                <a href="{{ url_for('professor.run_quiz',course_id=course.id, quiz_id=quiz.quiz_id, question_number=1) }}"
+                <a href="{{ url_for('professor.start_quiz',course_id=course.id, quiz_id=quiz.quiz_id) }}"
                    class="fas fa-play" style="color:red"></a></span></h5>
           </div>
             <ul class="list-group list-group-flush">
