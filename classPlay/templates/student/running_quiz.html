@@ -1,8 +1,6 @@
-{% include "account_banner.html" %}
-{% include "professor/nav_bar.html" %}
-{% extends "layout.html" %}
+{% include "student/course_quiz.html" %}
 {% block content %}
-<script type="text/javascript" src="{{ url_for('static', filename='js/runQuiz.js')}}"> </script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/studentRunningQuiz.js')}}"> </script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/lib.js')}}"> </script>
 <div div class="row">
     <div class="col-md-2 mb-2">
@@ -10,23 +8,6 @@
     </div>
 </div>
 <div class="row">
-
-    <!--Controls-->
-    <div id= "controls" class="col-md-2">
-        <div class="card" style="width: 12rem;">
-            <div class="card-body">
-                <h5 class="card-title"><i>Quiz Controls</i></h5>
-            </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <button type="button" class="startButton">
-                        <i class="fas fa-play"></i></button></li>
-                <li class="list-group-item">
-                    <button type="button" class= "pauseButton">
-                        <i class="fas fa-stop"></i></button></li>
-            </ul>
-        </div>
-    </div>
 
     <div id="question_content" class="row col-md-10">
         <div class="col-md-9">
@@ -43,7 +24,6 @@
                 </ul>
             </div>
         </div>
-
         <div class="col-md-3">
             <div class="card" style="width: 12rem;">
                 <div class="card-body">
@@ -51,12 +31,12 @@
                 </div>
                 <ul class="list-group list-group-flush checkbox">
                     <li class="list-group-item">
-                        <script>setupStateCalls({{time_limit}},{{professor.id}},{{course.id}},{{question_number}})</script>
+                        <script>startTimer({{time_limit}})</script>
                         <div id="question_timer">00:00:00</div></li>
                 </ul>
             </div>
         </div>
-    </div>
 
+    </div>
 </div>
 {% endblock content %}

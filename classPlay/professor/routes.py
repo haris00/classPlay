@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, abort, request
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_login import current_user, login_required
 from classPlay import db, bcrypt
 from classPlay.professor.forms import ProfessorRegistrationForm, UpdateProfessorAccountForm
 from classPlay.main.utils import user_redirect
 from classPlay.course.models import Course
 from classPlay.quiz.models import Quiz
-from classPlay.professor.lib import get_quiz_content, set_quiz_state_in_redis, get_quiz_state_in_redis, \
+from classPlay.lib import get_quiz_content, set_quiz_state_in_redis, get_quiz_state_in_redis, \
     delete_quiz_state_in_redis
 from classPlay.professor.models import Professor
 import json
@@ -88,9 +88,10 @@ def start_quiz(course_id, quiz_id):
     if get_quiz_state_in_redis(professor_id=current_user, course_id=course_id) is None:
         abort(400)
     current_quiz_state = {
-        "status": "stopped",
+        "status": "running",
         "question_number": 1,
-        "time_limit": "not_set"
+        "time_limit": "not_set",
+        "quiz_id": quiz_id
     }
     set_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id, state=current_quiz_state)
     return redirect(url_for('professor.get_running_quiz',course_id=course_id, quiz_id=quiz_id))
@@ -110,6 +111,7 @@ def get_running_quiz(course_id, quiz_id):
         delete_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
         return render_template('professor/course_students.html', professor=current_user, course=course, active="content")
     mcq_options = quiz_content_object["questions"][question_number-1]["mcq_options"]
+    quiz_number = quiz_content_object["quiz_number"]
     question_text = quiz_content_object["questions"][question_number-1]["question_text"]
     if current_quiz_state.get("time_limit", "not_set") == "not_set":
         time_limit = quiz_content_object["questions"][question_number-1]["time_limit"]
@@ -117,11 +119,11 @@ def get_running_quiz(course_id, quiz_id):
         time_limit = current_quiz_state.get("time_limit")
     return render_template('professor/run_quiz.html', professor=current_user, course=course, mcq_options=mcq_options,
                            question_text=question_text, time_limit=time_limit, total_questions=total_questions,
-                           question_number=question_number, active="content")
+                           question_number=question_number, quiz_number=quiz_number, active="content")
 
 
 @professor.route("/professor/api/set_quiz_state", methods=['POST'])
-# @login_required
+@login_required
 def set_quiz_state():
     """
     Sets the state of a running quiz
@@ -140,7 +142,7 @@ def set_quiz_state():
     "running_quizes":<professor_id>:<course_id>:
     {
         {
-            "status": "pause",
+            "status": "paused",
             ...
         }
     }
@@ -158,3 +160,15 @@ def set_quiz_state():
         abort(400)
     set_quiz_state_in_redis(professor_id, course_id, state)
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+
+
+@professor.route("/professor/api/get_quiz_state", methods=['GET'])
+@login_required
+def get_quiz_state():
+    try:
+        professor_id = request.args.get("professor_id")
+        course_id = request.args.get("course_id")
+    except KeyError:
+        abort(400)
+    quiz_state = get_quiz_state_in_redis(professor_id, course_id)
+    return json.dumps(quiz_state), 200, {'ContentType': 'application/json'}

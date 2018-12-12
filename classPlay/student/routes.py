@@ -6,6 +6,8 @@ from classPlay.main.utils import user_redirect
 from classPlay.student.models import Student
 from classPlay.course.models import StudentCourse, Course
 from classPlay.professor.models import Professor
+from classPlay.quiz.models import Quiz
+from classPlay.lib import get_quiz_content, get_quiz_state_in_redis
 from classPlay import db
 
 student = Blueprint('student', __name__)
@@ -55,15 +57,31 @@ def edit_account():
     return render_template('student/account_update.html', student=current_user, form=form)
 
 
-@student.route("/student/course/content/<int:course_id>", methods=['GET', 'POST'])
+@student.route("/student/course/quiz/<int:course_id>", methods=['GET', 'POST'])
 @login_required
-def course_content(course_id):
+def course_quiz(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('student/course_content.html', student=current_user, course=course, active="content")
+    professor = db.session.query(Professor.id).join(Course).filter(Course.id == course_id).first()
+    professor_id = professor[0]
+    current_quiz_state = get_quiz_state_in_redis(professor_id=professor_id, course_id=course_id)
+    if current_quiz_state or (not current_quiz_state.get("time_limit", "not_set") == "not_set"):
+        quiz_id = current_quiz_state["quiz_id"]
+        quizes = Quiz.query.filter_by(id=quiz_id, course_id=course_id).all()
+        quiz_content_object = get_quiz_content(quizes, quiz_id=quiz_id)[0]
+        question_number = int(current_quiz_state["question_number"])
+        mcq_options = quiz_content_object["questions"][question_number - 1]["mcq_options"]
+        quiz_number = quiz_content_object["quiz_number"]
+        question_text = quiz_content_object["questions"][question_number - 1]["question_text"]
+        time_limit = current_quiz_state.get("time_limit")
+        return render_template('student/running_quiz.html', student=current_user, course=course,
+                               mcq_options=mcq_options,
+                               question_text=question_text, time_limit=time_limit, question_number=question_number,
+                               quiz_number=quiz_number, active="content")
+    return render_template('student/course_quiz.html', student=current_user, course=course, active="quiz")
 
 
 @student.route("/student/course/scoreBook/<int:course_id>", methods=['GET', 'POST'])
 @login_required
 def course_score_book(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('student/course_content.html', student=current_user, course=course, active="scoreBook")
+    return render_template('student/course_quiz.html', student=current_user, course=course, active="scoreBook")
