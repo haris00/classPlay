@@ -59,6 +59,10 @@ def edit_account():
 @login_required
 def course_content(course_id):
     course = Course.query.filter_by(id=course_id).first()
+    quiz_running_state = get_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
+    if quiz_running_state:
+        return redirect(url_for('professor.get_running_quiz',
+                                course_id=course_id, quiz_id = quiz_running_state["quiz_id"]))
     quizes = Quiz.query.filter_by(course_id=course_id).all()
     quiz_content_object = get_quiz_content(quizes)
 
@@ -97,6 +101,15 @@ def start_quiz(course_id, quiz_id):
     return redirect(url_for('professor.get_running_quiz',course_id=course_id, quiz_id=quiz_id))
 
 
+@professor.route("/professor/course/content/end_quiz/<int:course_id>", methods=['GET', 'POST'])
+@login_required
+def end_quiz(course_id):
+    delete_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
+    # TODO: Return to histogram page showing statistics
+    return redirect(url_for('professor.course_content', course_id=course_id))
+
+
+
 @professor.route("/professor/course/content/get_running_quiz/<int:course_id>/<int:quiz_id>/", methods=['GET', 'POST'])
 @login_required
 def get_running_quiz(course_id, quiz_id):
@@ -106,15 +119,17 @@ def get_running_quiz(course_id, quiz_id):
     # Stop the quiz if there is no questions (or don't let it run)
     total_questions = len(quiz_content_object["questions"])
     current_quiz_state = get_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
+    if not current_quiz_state:
+        return redirect(url_for('professor.course_content', course_id=course_id))
     question_number = int(current_quiz_state["question_number"])
     if total_questions == 0 or question_number > total_questions or question_number < 0:
-        delete_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
-        return render_template('professor/course_students.html', professor=current_user, course=course, active="content")
+        return redirect(url_for('professor.end_quiz', course_id=course_id))
     mcq_options = quiz_content_object["questions"][question_number-1]["mcq_options"]
     quiz_number = quiz_content_object["quiz_number"]
     question_text = quiz_content_object["questions"][question_number-1]["question_text"]
     if current_quiz_state.get("time_limit", "not_set") == "not_set":
         time_limit = quiz_content_object["questions"][question_number-1]["time_limit"]
+        set_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id, state={"time_limit": time_limit})
     else:
         time_limit = current_quiz_state.get("time_limit")
     return render_template('professor/run_quiz.html', professor=current_user, course=course, mcq_options=mcq_options,
@@ -122,6 +137,7 @@ def get_running_quiz(course_id, quiz_id):
                            question_number=question_number, quiz_number=quiz_number, active="content")
 
 
+# Only professor can set the quiz state. Therefore we keep this route in professor blueprint
 @professor.route("/professor/api/set_quiz_state", methods=['POST'])
 @login_required
 def set_quiz_state():
@@ -160,15 +176,3 @@ def set_quiz_state():
         abort(400)
     set_quiz_state_in_redis(professor_id, course_id, state)
     return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
-
-
-@professor.route("/professor/api/get_quiz_state", methods=['GET'])
-@login_required
-def get_quiz_state():
-    try:
-        professor_id = request.args.get("professor_id")
-        course_id = request.args.get("course_id")
-    except KeyError:
-        abort(400)
-    quiz_state = get_quiz_state_in_redis(professor_id, course_id)
-    return json.dumps(quiz_state), 200, {'ContentType': 'application/json'}

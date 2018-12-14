@@ -1,5 +1,5 @@
-function setupStateCalls(questionTime,professor_id,course_id,question_number) {
-    quiz_state = getQuizState(professor_id, course_id);
+function setupStateCalls(questionTime,professorId,courseId,questionNumber) {
+    quiz_state = getQuizState(professorId, courseId);
     var timer = new Timer();
     timer.start({countdown: true, startValues: {seconds: questionTime}});
     if (quiz_state['status'] == "paused"){
@@ -13,13 +13,13 @@ function setupStateCalls(questionTime,professor_id,course_id,question_number) {
     $(document).ready(function() {
     $('#controls').find('.startButton').click(function () {
       data = {
-    "professor_id":professor_id,
-    "course_id":course_id,
+    "professorId":professorId,
+    "course_id":courseId,
     "state": {
         "status":"running",
     }
     };
-       quiz_state_success_function = function(timer){
+    quiz_state_success_function = function(timer){
     timer.start();
     };
     setQuizState(data,quiz_state_success_function(timer));
@@ -29,8 +29,8 @@ function setupStateCalls(questionTime,professor_id,course_id,question_number) {
     $('#controls').find('.pauseButton').click(function () {
        var remainingTime = timer.getTimeValues().seconds;
        data = {
-        "professor_id":professor_id,
-        "course_id":course_id,
+        "professor_id":professorId,
+        "course_id":courseId,
         "state": {
             "status":"paused",
             "time_limit": remainingTime
@@ -39,6 +39,8 @@ function setupStateCalls(questionTime,professor_id,course_id,question_number) {
        quiz_state_success_function = function(timer){
         timer.pause();
     };
+    // TODO: This should only pause the quiz if json return is success
+    // it's not behaving like this at the moment. See this
     setQuizState(data,quiz_state_success_function(timer));
     });
 
@@ -47,10 +49,10 @@ function setupStateCalls(questionTime,professor_id,course_id,question_number) {
     // on timer-expiry
     timer.addEventListener('targetAchieved', function (e) {
            data = {
-            "professor_id":professor_id,
-            "course_id":course_id,
+            "professor_id":professorId,
+            "course_id":courseId,
             "state": {
-                "question_number":question_number+1,
+                "question_number":questionNumber+1,
                 "time_limit": "not_set"
             }
         };
@@ -71,22 +73,3 @@ function setQuizState(data, success_function=function(){}) {
         contentType: "application/json; charset=utf-8",
         success: success_function});
 }
-
-function getQuizState(professor_id, course_id) {
-    var quiz_state = {};
-    jQuery.ajax ({
-        url: "/professor/api/get_quiz_state",
-        type: "GET",
-        data: { "professor_id": professor_id, "course_id": course_id },
-        async: false,
-        cache: false,
-        timeout: 30000,
-        error: function(){
-            console.log("Cannot get quiz state");
-        },
-        success: function( data ) {
-        quiz_state = data ;
-        }});
-    return JSON.parse(quiz_state);
-}
-

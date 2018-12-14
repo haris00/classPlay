@@ -23,7 +23,11 @@
                         <i class="fas fa-play"></i></button></li>
                 <li class="list-group-item">
                     <button type="button" class= "pauseButton">
-                        <i class="fas fa-stop"></i></button></li>
+                        <i class="fas fa-pause"></i></button></li>
+                <li class="list-group-item">
+                    <a type="btn btn-primary" role="button" aria-pressed="true" class= "endButton"
+                     href="{{ url_for('professor.end_quiz',course_id=course.id) }}">
+                        End Quiz</a></li>
             </ul>
         </div>
     </div>

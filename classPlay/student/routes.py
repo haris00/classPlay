@@ -64,19 +64,19 @@ def course_quiz(course_id):
     professor = db.session.query(Professor.id).join(Course).filter(Course.id == course_id).first()
     professor_id = professor[0]
     current_quiz_state = get_quiz_state_in_redis(professor_id=professor_id, course_id=course_id)
-    if current_quiz_state or (not current_quiz_state.get("time_limit", "not_set") == "not_set"):
-        quiz_id = current_quiz_state["quiz_id"]
-        quizes = Quiz.query.filter_by(id=quiz_id, course_id=course_id).all()
-        quiz_content_object = get_quiz_content(quizes, quiz_id=quiz_id)[0]
-        question_number = int(current_quiz_state["question_number"])
-        mcq_options = quiz_content_object["questions"][question_number - 1]["mcq_options"]
-        quiz_number = quiz_content_object["quiz_number"]
-        question_text = quiz_content_object["questions"][question_number - 1]["question_text"]
-        time_limit = current_quiz_state.get("time_limit")
-        return render_template('student/running_quiz.html', student=current_user, course=course,
-                               mcq_options=mcq_options,
-                               question_text=question_text, time_limit=time_limit, question_number=question_number,
-                               quiz_number=quiz_number, active="content")
+    if current_quiz_state:
+        if current_quiz_state.get("time_limit", "not_set") != "not_set":
+            quiz_id = current_quiz_state["quiz_id"]
+            quizes = Quiz.query.filter_by(id=quiz_id, course_id=course_id).all()
+            quiz_content_object = get_quiz_content(quizes, quiz_id=quiz_id)[0]
+            question_number = int(current_quiz_state["question_number"])
+            mcq_options = quiz_content_object["questions"][question_number - 1]["mcq_options"]
+            quiz_number = quiz_content_object["quiz_number"]
+            question_text = quiz_content_object["questions"][question_number - 1]["question_text"]
+            return render_template('student/running_quiz.html', student=current_user, course=course,
+                                   mcq_options=mcq_options, professor=professor,
+                                   question_text=question_text, question_number=question_number,
+                                   quiz_number=quiz_number, active="content")
     return render_template('student/course_quiz.html', student=current_user, course=course, active="quiz")
 
 
