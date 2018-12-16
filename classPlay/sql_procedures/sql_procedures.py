@@ -1,5 +1,5 @@
 from classPlay.course.models import Course
-from classPlay.quiz.models import Quiz
+from classPlay.quiz.models import Quiz, QuizRun, StudentQuizRunQuestionAttempt, StudentQuizRunAnswers
 from classPlay.question.models import QuizQuestion, Question, MCQ, MCQAnswers
 from classPlay import db
 from sqlalchemy import desc
@@ -14,6 +14,20 @@ def create_quiz(course_id):
     quiz = Quiz(quiz_number=quiz_number, course_id=course_id)
     db.session.add(quiz)
     db.session.commit()
+
+
+def create_quiz_run(quiz_id):
+    last_quiz_run = QuizRun.query.filter_by(quiz_id=quiz_id).order_by(desc(QuizRun.run_number)).limit(1).first()
+    quiz_run_number = 0
+    if last_quiz_run:
+        quiz_run_number = last_quiz_run.run_number
+    quiz_run_number += 1
+    quiz_run = QuizRun(run_number=quiz_run_number, quiz_id=quiz_id)
+    db.session.add(quiz_run)
+    db.session.flush()
+    quiz_run_id = quiz_run.id
+    db.session.commit()
+    return quiz_run_id
 
 
 def create_question(course_id, quiz_number, time_limit, question_text, question_type="MCQ"):
@@ -54,3 +68,16 @@ def create_mcq_option(course_id, quiz_number, question_number, option_text, corr
             mcq_option = MCQAnswers(option_text=option_text, correct_answer=correct_answer, question_id=question_id)
         db.session.add(mcq_option)
         db.session.commit()
+
+
+def insert_student_quiz_attempt_answer(student_id, question_id, quiz_run_id, answer_ids):
+    student_quiz_run_question_attempt = StudentQuizRunQuestionAttempt(student_id=student_id,
+                                                                      quiz_run_id=quiz_run_id, question_id=question_id)
+    db.session.add(student_quiz_run_question_attempt)
+    db.session.flush()
+    student_quiz_run_question_attempt_id = student_quiz_run_question_attempt.id
+    for answer_id in answer_ids:
+        student_quiz_run_answers = StudentQuizRunAnswers(
+            student_quiz_run_question_attempt_id=student_quiz_run_question_attempt_id, answer_id=int(answer_id))
+        db.session.add(student_quiz_run_answers)
+    db.session.commit()

@@ -9,6 +9,7 @@ from classPlay.lib import get_quiz_content, set_quiz_state_in_redis, get_quiz_st
     delete_quiz_state_in_redis
 from classPlay.professor.models import Professor
 import json
+from classPlay.sql_procedures.sql_procedures import create_quiz_run
 
 professor = Blueprint('professor', __name__)
 
@@ -81,6 +82,7 @@ def course_grades(course_id):
 @login_required
 def course_students(course_id):
     course = Course.query.filter_by(id=course_id).first()
+
     return render_template('professor/course_students.html', professor=current_user, course=course, active="students")
 
 
@@ -91,11 +93,13 @@ def start_quiz(course_id, quiz_id):
     # The app should never allow to start quiz if it's already running
     if get_quiz_state_in_redis(professor_id=current_user, course_id=course_id) is None:
         abort(400)
+    quiz_run_id = create_quiz_run(quiz_id)
     current_quiz_state = {
         "status": "running",
         "question_number": 1,
         "time_limit": "not_set",
-        "quiz_id": quiz_id
+        "quiz_id": quiz_id,
+        "quiz_run_id": quiz_run_id
     }
     set_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id, state=current_quiz_state)
     return redirect(url_for('professor.get_running_quiz',course_id=course_id, quiz_id=quiz_id))
@@ -107,7 +111,6 @@ def end_quiz(course_id):
     delete_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
     # TODO: Return to histogram page showing statistics
     return redirect(url_for('professor.course_content', course_id=course_id))
-
 
 
 @professor.route("/professor/course/content/get_running_quiz/<int:course_id>/<int:quiz_id>/", methods=['GET', 'POST'])

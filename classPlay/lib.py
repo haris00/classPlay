@@ -34,6 +34,7 @@ def get_quiz_content(quizes, quiz_id=None):
                     mcq_options_content = dict()
                     mcq_options_content["option_text"] = mcq_answer.option_text
                     mcq_options_content["correct_answer"] = mcq_answer.correct_answer
+                    mcq_options_content["answer_id"] = mcq_answer.id
                     mcq_options.append(mcq_options_content)
                 question_content["mcq_options"] = mcq_options
                 quiz_content_object[quiz_index]["questions"].append(question_content)

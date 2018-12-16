@@ -8,9 +8,8 @@
     </div>
 </div>
 <div class="row">
-
-    <div id="question_content" class="row col-md-10">
-        <div class="col-md-9">
+    <!--TODO: Fix the content displaying -->
+    <div id="question_content" class="col-md-12 col-sm-12">
             <div class="card" style="width: 50rem;">
                 <div class="card-body">
                     <h5 class="card-title"><strong>Question {{question_number}} </strong>:
@@ -18,12 +17,23 @@
                 </div>
                 <ul class="list-group list-group-flush checkbox">
                     {% for mcq in mcq_options %}
-                        <li class="list-group-item"><script>document.write(convertNumberToLetter({{loop.index}}))
-                                                    </script>.&nbsp;&nbsp;{{mcq.option_text}}</li>
+                        <li class="list-group-item"><input type="checkbox" name="answer" value="{{mcq.answer_id}}">&nbsp;
+                            <script>document.write(convertNumberToLetter({{loop.index}}))</script>
+                            .&nbsp;{{mcq.option_text}}</li>
                     {% endfor %}
+                    <li class="list-group-item">
+                        <button type="button" onclick="submitAnswer({{professor.id}},{{course.id}},{{quiz_id}},{{question_id}}, {{question_number}})"
+                                class="btn btn-primary" id="answer_submit_button">Submit</button>
+                    </li>
+                    <li class="list-group-item">
+                        <div class = "row">
+                            <div class="col-md-4 col-sm-4">
+                                <div class="alert alert-primary" role="alert" id="answer_status">Unanswered</div>
+                            </div>
+                        </div>
+                    </li>
                 </ul>
             </div>
-        </div>
 
     </div>
 </div>

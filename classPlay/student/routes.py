@@ -36,7 +36,6 @@ def register():
 @student.route("/student", methods=['GET', 'POST'])
 @login_required
 def account():
-    # filter(StudentCourse.student_id==current_user.id)
     student_courses = db.session.query(StudentCourse, Course, Professor).join(Course, Professor).filter(StudentCourse.student_id==current_user.id).all()
     return render_template('student/home.html', student=current_user, student_courses=student_courses)
 
@@ -73,9 +72,10 @@ def course_quiz(course_id):
             mcq_options = quiz_content_object["questions"][question_number - 1]["mcq_options"]
             quiz_number = quiz_content_object["quiz_number"]
             question_text = quiz_content_object["questions"][question_number - 1]["question_text"]
+            question_id = quiz_content_object["questions"][question_number - 1]["question_id"]
             return render_template('student/running_quiz.html', student=current_user, course=course,
-                                   mcq_options=mcq_options, professor=professor,
-                                   question_text=question_text, question_number=question_number,
+                                   mcq_options=mcq_options, professor=professor, question_id=question_id,
+                                   question_text=question_text, question_number=question_number, quiz_id=quiz_id,
                                    quiz_number=quiz_number, active="content")
     return render_template('student/course_quiz.html', student=current_user, course=course, active="quiz")
 
