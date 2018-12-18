@@ -3,7 +3,8 @@ from flask_login import current_user, login_required
 from classPlay import db, bcrypt
 from classPlay.professor.forms import ProfessorRegistrationForm, UpdateProfessorAccountForm
 from classPlay.main.utils import user_redirect
-from classPlay.course.models import Course
+from classPlay.course.models import Course, StudentCourse
+from classPlay.student.models import Student
 from classPlay.quiz.models import Quiz
 from classPlay.lib import get_quiz_content, set_quiz_state_in_redis, get_quiz_state_in_redis, \
     delete_quiz_state_in_redis
@@ -82,8 +83,10 @@ def course_grades(course_id):
 @login_required
 def course_students(course_id):
     course = Course.query.filter_by(id=course_id).first()
-
-    return render_template('professor/course_students.html', professor=current_user, course=course, active="students")
+    students = db.session.query(Student).join(StudentCourse).filter(
+        Course.id == course_id).all()
+    return render_template('professor/course_students.html', professor=current_user, course=course,
+                           students=students, active="students")
 
 
 @professor.route("/professor/course/content/start_quiz/<int:course_id>/<int:quiz_id>", methods=['GET', 'POST'])
