@@ -1,0 +1,28 @@
+{% include "account_banner.html" %}
+{% include "professor/nav_bar.html" %}
+{% extends "layout.html" %}
+{% block content %}
+{% for quiz in scores %}
+    <h5>Quiz {{quiz.quiz_number}}</h5>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Quiz Run Number</th>
+            <th scope="col">Questions</th>
+          <th scope="col">Correct Answer</th>
+            <th scope="col">Marks</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for quiz_run in quiz.quiz_runs %}
+        <tr>
+          <th scope="row">{{quiz_run.quiz_run_number}}</th>
+            <td>{{quiz_run.marks.correct_answers + quiz_run.marks.incorrect_answers }}</td>
+          <td>{{quiz_run.marks.correct_answers }}</td>
+           <td>{{quiz_run.marks.correct_answers}} / {{quiz_run.marks.correct_answers + quiz_run.marks.incorrect_answers }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+{% endfor %}
+{% endblock content %}

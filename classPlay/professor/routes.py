@@ -11,6 +11,7 @@ from classPlay.lib import get_quiz_content, set_quiz_state_in_redis, get_quiz_st
 from classPlay.professor.models import Professor
 import json
 from classPlay.sql_procedures.sql_procedures import create_quiz_run
+from classPlay.metrics.lib import student_scores
 
 professor = Blueprint('professor', __name__)
 
@@ -72,21 +73,24 @@ def course_content(course_id):
                            quiz_content_object=quiz_content_object , active="content")
 
 
-@professor.route("/professor/course/grades/<int:course_id>", methods=['GET', 'POST'])
+@professor.route("/professor/course/score_book/<int:course_id>", methods=['GET', 'POST'])
 @login_required
-def course_grades(course_id):
-    course = Course.query.filter_by(id=course_id).first()
-    return render_template('professor/course_grades.html', professor=current_user, course=course, active="grades")
-
-
-@professor.route("/professor/course/students/<int:course_id>", methods=['GET', 'POST'])
-@login_required
-def course_students(course_id):
+def score_book(course_id):
     course = Course.query.filter_by(id=course_id).first()
     students = db.session.query(Student).join(StudentCourse).filter(
         Course.id == course_id).all()
-    return render_template('professor/course_students.html', professor=current_user, course=course,
-                           students=students, active="students")
+    return render_template('professor/score_book.html', professor=current_user, course=course,
+                           students=students, active="score_book")
+
+
+@professor.route("/professor/course/student_score_book/<int:course_id>/<int:student_id>", methods=['GET', 'POST'])
+@login_required
+def student_score_book(course_id, student_id):
+    student = Student.query.filter_by(id=student_id).first()
+    course = Course.query.filter_by(id=course_id).first()
+    scores = student_scores(student_id=student_id, course_id=course_id)
+    return render_template('professor/student_score_book.html', student=student, course=course,
+                           scores=scores, active="score_book")
 
 
 @professor.route("/professor/course/content/start_quiz/<int:course_id>/<int:quiz_id>", methods=['GET', 'POST'])

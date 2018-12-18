@@ -7,6 +7,7 @@ from classPlay.student.models import Student
 from classPlay.course.models import StudentCourse, Course
 from classPlay.professor.models import Professor
 from classPlay.quiz.models import Quiz
+from classPlay.metrics.lib import student_scores
 from classPlay.lib import get_quiz_content, get_quiz_state_in_redis
 from classPlay import db
 
@@ -84,4 +85,6 @@ def course_quiz(course_id):
 @login_required
 def course_score_book(course_id):
     course = Course.query.filter_by(id=course_id).first()
-    return render_template('student/course_quiz.html', student=current_user, course=course, active="scoreBook")
+    scores = student_scores(student_id=current_user.id, course_id=course_id)
+    return render_template('student/score_book.html', student=current_user, course=course,
+                           scores=scores, active="score_book")

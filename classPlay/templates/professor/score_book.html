@@ -17,7 +17,7 @@
       <th scope="row">{{loop.index}}</th>
       <td>{{student.first_name}}</td>
       <td>{{student.last_name}}</td>
-      <td>{{student.email}}</td>
+      <td><a href="{{ url_for('professor.student_score_book',course_id=course.id, student_id=student.id) }}">{{student.email}}</a></td>
     </tr>
   {% endfor %}
   </tbody>

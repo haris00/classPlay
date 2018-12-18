@@ -25,7 +25,7 @@ def all_students_scores(course_id):
             "scores":  student_scores(student_id, course_id)
         }
         all_student_scores.append(deepcopy(student_score))
-    x = 1
+
 
 def student_scores(student_id, course_id):
     """To return data in the following format (example)
@@ -65,14 +65,15 @@ def student_scores(student_id, course_id):
     quiz_runs = list()
     last_quiz_number = quiz_run_data[0][1]
     for course_id, quiz_number, quiz_run_number, quiz_run_id in quiz_run_data:
+        if last_quiz_number != quiz_number:
+            student_scores.append({"quiz_number": last_quiz_number,
+                                   "quiz_runs": deepcopy(quiz_runs)})
+            quiz_runs = list()
+            last_quiz_number = quiz_number
+
         quiz_runs.append({"quiz_run_number":quiz_run_number,
-                         "marks": quiz_run_result(student_id, quiz_run_id)})
-        if last_quiz_number == quiz_number:
-            continue
-        student_scores.append({"quiz_number": last_quiz_number,
-                               "quiz_runs": deepcopy(quiz_runs)})
-        quiz_runs = list()
-        last_quiz_number = quiz_number
+                          "marks": quiz_run_result(student_id, quiz_run_id)})
+
 
     student_scores.append({"quiz_number": last_quiz_number,
                            "quiz_runs": deepcopy(quiz_runs)})
