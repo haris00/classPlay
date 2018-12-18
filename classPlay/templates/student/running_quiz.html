@@ -1,4 +1,6 @@
-{% include "student/course_quiz.html" %}
+{% include "account_banner.html" %}
+{% include "student/nav_bar.html" %}
+{% extends "layout.html" %}
 {% block content %}
 <script type="text/javascript" src="{{ url_for('static', filename='js/studentRunningQuiz.js')}}"> </script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/lib.js')}}"> </script>
