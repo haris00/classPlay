@@ -1,4 +1,5 @@
 from classPlay.question.models import QuizQuestion, Question, MCQ, MCQAnswers
+from classPlay.quiz.models import QuizRun
 from sqlalchemy import asc
 from classPlay import redis
 
@@ -12,6 +13,13 @@ def get_quiz_content(quizes, quiz_id=None):
             continue
         quiz_content["quiz_id"] = quiz.id
         quiz_content["quiz_number"] = quiz.quiz_number
+        quiz_runs = QuizRun.query.filter_by(quiz_id=quiz.id).all()
+        quiz_runs_list = []
+        for quiz_run in quiz_runs:
+            quiz_runs_list.append({"quiz_run_number": quiz_run.run_number,
+                              "quiz_run_id": quiz_run.id
+                              })
+        quiz_content["quiz_runs"] = quiz_runs_list
         quiz_content_object.append(quiz_content)
 
     for quiz_index, quiz in enumerate(quiz_content_object):

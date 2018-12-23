@@ -2,6 +2,9 @@
 {% include "professor/nav_bar.html" %}
 {% extends "layout.html" %}
 {% block content %}
+<div class="p-3">
+    <h3><i><strong>{{student.first_name|capitalize}}  {{student.last_name|capitalize}}</strong></i></h3>
+</div>
 {% for quiz in scores %}
     <h5>Quiz {{quiz.quiz_number}}</h5>
     <table class="table">

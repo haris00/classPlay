@@ -1,0 +1,43 @@
+{% include "account_banner.html" %}
+{% include "professor/nav_bar.html" %}
+{% extends "layout.html" %}
+{% block content %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/lib.js')}}"> </script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/questionMetrics.js')}}"> </script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/questionMetricsWithTimer.js')}}"> </script>
+<span><h3>Quiz: {{quiz.quiz_number}}</h3></span>
+<span><h5><i>Question: </i> {{question.question_number}}</h5></span>
+<span><h5><i>Quiz Run: </i> {{quiz_run.run_number}}</h5></span>
+<div class="row">
+
+    <div class="col-md-3" id="metrics_timer">
+        <div class="card" style="width: 12rem;">
+            <div class="card-body">
+                 <h5 class="card-title">Metrics Timer</h5>
+            </div>
+            <ul class="list-group list-group-flush checkbox">
+                <li class="list-group-item">
+                    <script>setupTimerCalls(15,{{professor_id}},{{course.id}},{{question_number}})</script>
+                    <div id="count_timer">00:00:00</div>
+                </li>
+                <li class="list-group-item">
+                    <button type="button" class="nextButton">
+                        <i class="fas fa-step-forward"></i></button>
+                </li>
+                <li class="list-group-item">
+                    <button type="button" class="pauseButton">
+                        <i class="fas fa-pause"></i></button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-6 ">
+        <canvas id="chart"></canvas>
+    </div>
+
+</div>
+<script>populateChart({{chart|tojson}})</script>
+
+
+{% endblock content %}

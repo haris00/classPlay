@@ -138,3 +138,46 @@ def is_answer_correct(student_id, question_id, quiz_run_id):
             return False
 
     return True
+
+
+def answers_selected(quiz_run_id, question_id):
+    student_quiz_run_question_attempts = StudentQuizRunQuestionAttempt.query.filter_by(quiz_run_id=quiz_run_id,
+                                                                                       question_id=question_id).all()
+    answer_id_count = dict()
+    for student_quiz_run_question_attempt in student_quiz_run_question_attempts:
+        student_quiz_answers = StudentQuizRunAnswers.query.filter_by(
+            student_quiz_run_question_attempt_id=student_quiz_run_question_attempt.id).all()
+        for student_quiz_answer in student_quiz_answers:
+            answer_id_count[student_quiz_answer.answer_id] = answer_id_count.get(student_quiz_answer.answer_id, 0) + 1
+
+    # marking the remaining ids (which none of the students answered) as zero
+    question = Question.query.filter_by(id=question_id).first()
+    if question.question_type == 'MCQ':
+        mcq = MCQ.query.filter_by(question_id=question.id).first()
+        mcq_answers = MCQAnswers.query.filter_by(question_id=mcq.id).all()
+    for mcq_answer in mcq_answers:
+        answer_id_count[mcq_answer.id] = answer_id_count.get(mcq_answer.id, 0)
+
+    # convert to percentages
+    total_answers = sum(answer_id_count.values())
+    for option, answer_count in answer_id_count.iteritems():
+        try:
+            answer_id_count[option] = (answer_count/float(total_answers)) * 100
+        except ZeroDivisionError:
+            answer_id_count[option] = 0;
+
+    return answer_id_count
+
+
+def get_correct_answers(question_id, correct_answer=True):
+    """Returns all the correct or incorrect answers (depending on correct_answer argument input)"""
+    correct_answers = list()
+    question = Question.query.filter_by(id=question_id).first()
+    question_type = question.question_type
+    if question_type == 'MCQ':
+        mcq = MCQ.query.filter_by(question_id=question.id).first()
+        mcq_answers = MCQAnswers.query.filter_by(question_id=mcq.id, correct_answer=correct_answer).all()
+        for mcq_answer in mcq_answers:
+            correct_answers.append(mcq_answer.id)
+
+    return correct_answers

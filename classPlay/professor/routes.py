@@ -5,13 +5,15 @@ from classPlay.professor.forms import ProfessorRegistrationForm, UpdateProfessor
 from classPlay.main.utils import user_redirect
 from classPlay.course.models import Course, StudentCourse
 from classPlay.student.models import Student
-from classPlay.quiz.models import Quiz
+from classPlay.quiz.models import Quiz, QuizRun
+from classPlay.question.models import Question
 from classPlay.lib import get_quiz_content, set_quiz_state_in_redis, get_quiz_state_in_redis, \
     delete_quiz_state_in_redis
 from classPlay.professor.models import Professor
 import json
 from classPlay.sql_procedures.sql_procedures import create_quiz_run
-from classPlay.metrics.lib import student_scores
+from classPlay.metrics.lib import student_scores, answers_selected, get_correct_answers
+from classPlay.professor.lib import get_chart_from_answers
 
 professor = Blueprint('professor', __name__)
 
@@ -93,6 +95,33 @@ def student_score_book(course_id, student_id):
                            scores=scores, active="score_book")
 
 
+@professor.route("/professor/course/question_metrics/<int:course_id>/<int:quiz_run_id>/<int:question_id>", methods=['GET'])
+@login_required
+def question_metrics(course_id, quiz_run_id, question_id):
+    course, question, chart, quiz, quiz_run = _question_metric(course_id, quiz_run_id, question_id)
+    return render_template('professor/question_metrics.html', professor=current_user, course=course, question=question,
+                           chart=chart, quiz=quiz, quiz_run=quiz_run, active="score_book")
+
+
+def question_metrics_with_timer(course_id, quiz_run_id, question_id, professor_id, question_number):
+    course, question, chart, quiz, quiz_run = _question_metric(course_id, quiz_run_id, question_id)
+    return render_template('professor/question_metrics_with_timer.html', professor=current_user, course=course,
+                           question=question, chart=chart, quiz=quiz, quiz_run=quiz_run, professor_id=professor_id,
+                           question_number=question_number, active="score_book")
+
+
+def _question_metric(course_id, quiz_run_id, question_id):
+    answers = answers_selected(quiz_run_id, question_id)
+    correct_answers = get_correct_answers(question_id)
+    chart = get_chart_from_answers(answers, correct_answers)
+    course = Course.query.filter_by(id=course_id).first()
+    question = Question.query.filter_by(id=question_id).first()
+    quiz_run = QuizRun.query.filter_by(id=quiz_run_id).first()
+    quiz = Quiz.query.filter_by(id=quiz_run.quiz_id).first()
+
+    return course, question, chart, quiz, quiz_run
+
+
 @professor.route("/professor/course/content/start_quiz/<int:course_id>/<int:quiz_id>", methods=['GET', 'POST'])
 @login_required
 def start_quiz(course_id, quiz_id):
@@ -109,7 +138,7 @@ def start_quiz(course_id, quiz_id):
         "quiz_run_id": quiz_run_id
     }
     set_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id, state=current_quiz_state)
-    return redirect(url_for('professor.get_running_quiz',course_id=course_id, quiz_id=quiz_id))
+    return redirect(url_for('professor.get_running_quiz', course_id=course_id, quiz_id=quiz_id))
 
 
 @professor.route("/professor/course/content/end_quiz/<int:course_id>", methods=['GET', 'POST'])
@@ -131,7 +160,15 @@ def get_running_quiz(course_id, quiz_id):
     current_quiz_state = get_quiz_state_in_redis(professor_id=current_user.id, course_id=course_id)
     if not current_quiz_state:
         return redirect(url_for('professor.course_content', course_id=course_id))
+
     question_number = int(current_quiz_state["question_number"])
+
+    if "metrics" in current_quiz_state["status"]:
+        return question_metrics_with_timer(course_id=course_id,
+                                           quiz_run_id=current_quiz_state["quiz_run_id"],
+                                           question_id=quiz_content_object["questions"][question_number-1]["question_id"],
+                                           professor_id=current_user.id, question_number=question_number)
+
     if total_questions == 0 or question_number > total_questions or question_number < 0:
         return redirect(url_for('professor.end_quiz', course_id=course_id))
     mcq_options = quiz_content_object["questions"][question_number-1]["mcq_options"]

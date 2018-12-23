@@ -65,7 +65,10 @@ def course_quiz(course_id):
     professor_id = professor[0]
     current_quiz_state = get_quiz_state_in_redis(professor_id=professor_id, course_id=course_id)
     if current_quiz_state:
-        if current_quiz_state.get("time_limit", "not_set") != "not_set":
+        if "metrics" in current_quiz_state["status"]:
+            return render_template('student/quiz_metrics.html', student=current_user, course=course, active="quiz")
+
+        elif current_quiz_state.get("time_limit", "not_set") != "not_set":
             quiz_id = current_quiz_state["quiz_id"]
             quizes = Quiz.query.filter_by(id=quiz_id, course_id=course_id).all()
             quiz_content_object = get_quiz_content(quizes, quiz_id=quiz_id)[0]

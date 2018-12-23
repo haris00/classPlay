@@ -52,14 +52,27 @@ function setupStateCalls(questionTime,professorId,courseId,questionNumber) {
             "professor_id":professorId,
             "course_id":courseId,
             "state": {
-                "question_number":questionNumber+1,
-                "time_limit": "not_set"
+                "status":"displaying_metrics"
             }
         };
            quiz_state_success_function = function(){
            location.assign(location.href);
         };
         setQuizState(data,quiz_state_success_function);
+
+
+//           data = {
+//            "professor_id":professorId,
+//            "course_id":courseId,
+//            "state": {
+//                "question_number":questionNumber+1,
+//                "time_limit": "not_set"
+//            }
+//        };
+//           quiz_state_success_function = function(){
+//           location.assign(location.href);
+//        };
+//        setQuizState(data,quiz_state_success_function);
 
 });
 }

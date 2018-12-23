@@ -1,0 +1,18 @@
+{% include "account_banner.html" %}
+{% include "professor/nav_bar.html" %}
+{% extends "layout.html" %}
+{% block content %}
+<span><h3>Quiz: {{quiz.quiz_number}}</h3></span>
+<span><h5><i>Question: </i> {{question.question_number}}</h5></span>
+<span><h5><i>Quiz Run: </i> {{quiz_run.run_number}}</h5></span>
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <canvas id="chart"></canvas>
+    </div>
+</div>
+<script type="text/javascript" src="{{ url_for('static', filename='js/questionMetricsWithTimer.js')}}"> </script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/questionMetrics.js')}}"> </script>
+<script>populateChart({{chart|tojson}})</script>
+
+
+{% endblock content %}

@@ -9,22 +9,53 @@
     <div class="col-md-2">
         {% for quiz in quiz_content_object %}
         <div class="card" style="width: 12rem;">
+
           <div class="card-body">
             <h5 class="card-title"><span>Quiz {{quiz.quiz_number}}&nbsp;&nbsp;&nbsp;
                 <a href="{{ url_for('professor.start_quiz',course_id=course.id, quiz_id=quiz.quiz_id) }}"
                    class="fas fa-play" style="color:red"></a></span></h5>
           </div>
+
             <ul class="list-group list-group-flush">
             {% for question in quiz.questions %}
                 <!--TODO: make questions collapsible-->
-                <li class="list-group-item"><i class="far fa-comment"></i>
-                    <a href="#" onclick='displayQuestion({{quiz.quiz_number}}, {{question.question_number}}, {{quiz_content_object[quiz.quiz_number-1]["questions"][question.question_number-1] | tojson}})'>
-                        Q. {{question.question_number}}</a></li>
+                    <li class="list-group-item">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <i class="far fa-comment"></i>
+                             <a href="#" onclick='displayQuestion({{quiz.quiz_number}}, {{question.question_number}}, {{quiz_content_object[quiz.quiz_number-1]["questions"][question.question_number-1] | tojson}})'>
+                                Q. {{question.question_number}}</a>
+                        </div>
+
+                        <div class="col-md-5">
+
+                            <div class="form-group">
+                                <select class="form-control" id="quiz_run_{{question.question_id}}">
+                                    {% for quiz_run in quiz.quiz_runs %}
+                                        {% if loop.last %}
+                                        <option value="{{quiz_run.quiz_run_id}}" selected>{{quiz_run.quiz_run_number}}</option>
+                                        {% else %}
+                                        <option value="{{quiz_run.quiz_run_id}}">{{quiz_run.quiz_run_number}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <a onclick= "navigateToMetrics({{course.id}}, {{question.question_id}})">
+                                    <i class="fas fa-chart-bar"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                    </li>
             {% endfor %}
           </ul>
         </div>
         {% endfor %}
     </div>
+
 
     <!--Container for displaying question-->
     <div class="col-md-10">

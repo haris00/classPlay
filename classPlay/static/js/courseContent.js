@@ -1,3 +1,6 @@
+// writing html inside javascript is very BAD approach.
+// We should instead manipulate DOM elements to achieve the desired result
+// The following code should be re-factored accordingly
 function displayQuestion(quiz_number, question_number, question) {
   question_html = `
   <span><h3>Quiz ${quiz_number}</h3></span>
@@ -13,4 +16,9 @@ function displayQuestion(quiz_number, question_number, question) {
     });
   question_html += `</ul>`;
   document.getElementById("question").innerHTML = question_html;
+}
+
+function navigateToMetrics(courseId, questionId){
+  var run_id = ($("#quiz_run_"+String(questionId)).val());
+  location.assign(`/professor/course/question_metrics/${courseId}/${run_id}/${questionId}`);
 }

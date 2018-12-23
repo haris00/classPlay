@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from classPlay.lib import get_quiz_state_in_redis
 from classPlay.quiz.models import StudentQuizRunQuestionAttempt
 from classPlay.sql_procedures.sql_procedures import insert_student_quiz_attempt_answer
-from classPlay.metrics.lib import is_answer_correct,  quiz_run_result, student_scores, all_students_scores
+from classPlay.metrics.lib import is_answer_correct,  quiz_run_result, student_scores, all_students_scores, answers_selected
 import json
 
 
@@ -46,9 +46,13 @@ def submit_answer():
     elif int(quiz_state["question_number"]) != int(question_number):
         return_data["message"] = "Question not running"
         return_data["submission_status"] = "error"
+
+    elif "metrics" in quiz_state["status"]:
+        return_data["message"] = "Metrics currently running now. Submission not possible"
+        return_data["submission_status"] = "error"
+
     else:
         quiz_run_id = quiz_state["quiz_run_id"]
-        all_students_scores(1)
         student_quiz_answers_query = StudentQuizRunQuestionAttempt.query.\
             filter_by(quiz_run_id=quiz_run_id, student_id=current_user.id, question_id=question_id).first()
         if student_quiz_answers_query:

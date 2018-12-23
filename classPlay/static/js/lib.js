@@ -20,3 +20,13 @@ function getQuizState(professor_id, course_id) {
         }});
     return JSON.parse(quiz_state);
 }
+
+function setQuizState(data, success_function=function(){}) {
+    jQuery.ajax ({
+        url: "/professor/api/set_quiz_state",
+        type: "POST",
+        data: JSON.stringify(data),
+        dataType: "json",
+        contentType: "application/json; charset=utf-8",
+        success: success_function});
+}

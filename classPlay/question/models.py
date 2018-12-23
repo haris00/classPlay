@@ -27,4 +27,5 @@ class MCQAnswers(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     option_text = db.Column(db.String(), nullable=False)
     correct_answer = db.Column(db.Boolean(), nullable=False, default=False)
+    # This is 'MCQ id', not the question id from question table
     question_id = db.Column('MCQ_id', db.Integer, db.ForeignKey("MCQ.id"), nullable=False)
